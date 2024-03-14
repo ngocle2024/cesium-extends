@@ -8,6 +8,7 @@ import Line from './shape/line';
 import Point from './shape/point';
 import Polygon from './shape/polygon';
 import Rectangle from './shape/rectangle';
+import Billboard from './shape/billboard';
 
 import type { Viewer } from 'cesium';
 import type { EventArgs, EventType } from '@cesium-extends/subscriber';
@@ -60,6 +61,9 @@ export const defaultOptions: DrawOption = {
       material: Color.YELLOW.withAlpha(0.5),
       outline: true,
     },
+    BILLBOARD: {
+      // TODO: Custom Billboard option
+    },
   },
   sameStyle: true,
   tips: {
@@ -82,7 +86,7 @@ export default class Drawer {
 
   private _events: string[] = [];
 
-  private _typeClass!: Line | Polygon | Point | Rectangle | Circle;
+  private _typeClass!: Line | Polygon | Point | Rectangle | Circle | Billboard;
 
   private _option: DrawOption;
 
@@ -184,6 +188,8 @@ export default class Drawer {
       this._typeClass = new Circle(this._painter, options);
     } else if (this._type === 'RECTANGLE') {
       this._typeClass = new Rectangle(this._painter, options);
+    } else if (this._type === 'BILLBOARD') {
+      this._typeClass = new Billboard(this._painter, options);
     }
 
     this._dropPoint = this._typeClass.dropPoint.bind(this._typeClass);
@@ -267,8 +273,8 @@ export default class Drawer {
       this._dropPoint(move);
       if (this._action) this._action(this._operateType.START, move);
 
-      // 如果是点，则此时执行点的结束绘制操作
-      if (this._type === 'POINT') {
+      // Stop drawing operation if it is a POINT or BILLBOARD
+      if (['POINT', "BILLBOARD"].includes(this._type)) {
         this._complete(overrideFunc);
         isStartDraw = false;
         const positions = this.$Instance?.position?.getValue(new JulianDate());
@@ -314,7 +320,7 @@ export default class Drawer {
       // ActionCallback
       if (this._action) this._action(this._operateType.END, move);
 
-      if (this._type === 'POINT') return;
+      if (['POINT', "BILLBOARD"].includes(this._type)) return;
 
       this._complete(overrideFunc);
       this._updateTips();
@@ -339,7 +345,7 @@ export default class Drawer {
   }
 
   private _isSupport(type: string) {
-    return ['POLYGON', 'POLYLINE', 'POINT', 'CIRCLE', 'RECTANGLE'].includes(type);
+    return ['POLYGON', 'POLYLINE', 'POINT', 'CIRCLE', 'RECTANGLE', 'BILLBOARD'].includes(type);
   }
 
   reset() {

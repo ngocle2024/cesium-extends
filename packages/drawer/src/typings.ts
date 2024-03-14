@@ -7,6 +7,7 @@ import type {
   PolygonGraphics,
   PolylineGraphics,
   RectangleGraphics,
+  BillboardGraphics,
 } from 'cesium';
 import type { EventArgs, EventType } from '@cesium-extends/subscriber';
 import type { BasicGraphicesOptions } from './base';
@@ -81,13 +82,14 @@ export interface DrawOption {
     POLYGON: PolygonGraphics.ConstructorOptions;
     CIRCLE: EllipseGraphics.ConstructorOptions;
     RECTANGLE: RectangleGraphics.ConstructorOptions;
+    BILLBOARD: BillboardGraphics.ConstructorOptions;
   };
   /**
    * 鼠标事件回调
    */
   action?: ActionCallback;
   sameStyle: boolean;
-  
+
   /** 自定义编辑时鼠标移动的提示 */
   tips: {
     /** 默认为 'Click to draw' */
@@ -103,7 +105,7 @@ export type StartOption = {
   /**
    * @desc 勾画类型 目前支持 Polygon、Line、Point、Circle、Rectangle
    */
-  type: 'POLYGON' | 'POLYLINE' | 'POINT' | 'CIRCLE' | 'RECTANGLE';
+  type: 'POLYGON' | 'POLYLINE' | 'POINT' | 'CIRCLE' | 'RECTANGLE' | 'BILLBOARD';
 
   /**
    * 是否只勾画一次，如果设为true，则在第一勾画结束时停止
